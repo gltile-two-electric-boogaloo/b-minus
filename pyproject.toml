@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "bminus"
+version = "0.1.0"
+description = ""
+authors = ["Sarah <80788438+gltile-two-electric-boogaloo@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "bminus"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+termcolor = "^2.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
