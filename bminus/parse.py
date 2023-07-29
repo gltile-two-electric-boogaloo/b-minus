@@ -51,6 +51,13 @@ class LiteralInt(Literal):
         return f"literal int {self.value}"
 
 
+class LiteralFloat(Literal):
+    value: float
+
+    def fmt_err(self):
+        return f"literal float {self.value}"
+
+
 class Function(Statement):
     ident: LiteralString
     params: list[Statement]
@@ -138,31 +145,42 @@ def read_statement(input: io.TextIOBase, top_level=False) -> Statement:
                 message=f"Unexpected eof"
             )
         case _:
-            if top_level:
+            if c == "\"":
+                (read, _) = read_until(input, ["\""])
+                input.read(1)  # grr
+
+                node = LiteralString()
+                node.value = read
+            elif top_level:
                 (read, _) = read_until(input, ["["])
 
                 node = LiteralString()
                 node.value = (c + read).strip()
-                return node
-
-            if c == "\"":
-                (read, _) = read_until(input, ["\""])
-
-                node = LiteralString()
-                node.value = c + read
             elif c.isnumeric() and c.isascii():
                 (read, _) = read_until(input, [" ", "\n", "[", "]"])
 
-                node = LiteralInt()
+                if "." in read:
+                    node = LiteralFloat()
 
-                try:
-                    node.value = int(c + read)
-                except ValueError:
-                    raise BMinusSyntaxError(
-                        start=initial_pos,
-                        end=input.tell(),
-                        message=f"Expected literal int, got \"{c + read}\""
-                    )
+                    try:
+                        node.value = float(c + read)
+                    except ValueError:
+                        raise BMinusSyntaxError(
+                            start=initial_pos,
+                            end=input.tell(),
+                            message=f"Invalid literal float \"{c + read}\""
+                        )
+                else:
+                    node = LiteralInt()
+
+                    try:
+                        node.value = int(c + read)
+                    except ValueError:
+                        raise BMinusSyntaxError(
+                            start=initial_pos,
+                            end=input.tell(),
+                            message=f"Invalid literal int \"{c + read}\""
+                        )
             else:
                 (read, _) = read_until(input, [" ", "\n" "[", "]"])
                 

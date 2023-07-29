@@ -11,6 +11,10 @@ python = "^3.11"
 termcolor = "^2.3.0"
 
 
+[tool.poetry.group.dev.dependencies]
+mkdocs = "^1.5.1"
+mkdocs-terminal = "^4.4.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

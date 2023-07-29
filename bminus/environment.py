@@ -12,6 +12,9 @@ class Value:
     _error_name = "value"
     val: any
 
+    def __init__(self, val=None):
+        self.val = val
+
     @classmethod
     def fmt_error(self):
         return self._error_name
@@ -46,6 +49,9 @@ class String(Array[str]):
     @classmethod
     def fmt_error(self):
         return "string"
+
+
+Any = Integer | Float | String
 
 
 class Function(typing.Protocol):

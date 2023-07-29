@@ -1,25 +1,32 @@
 import bminus.parse as parse
 import bminus.error as error
+import bminus.std.math as math
+import bminus.std.j as j
 import bminus.std.environment as environment
 import bminus.evaluate as evaluate
-from pprint import pprint
 
 to_parse = """
-Hello, world!
-[J 10]
+"hellooo!!
+[ADD 1 2]
 """
 
-@environment.function
-def j(n: environment.Integer) -> environment.String:
-    string = environment.String()
-    string.val = "j" * n.val
 
-    return string
+@environment.function("debug")
+def debug(x: environment.Integer) -> environment.String:
+    return environment.String(f"Integer {x.val}")
+
+
+@debug.overload
+def debug(x: environment.String) -> environment.String:
+    return environment.String(f"String \"{x.val}\"")
+
 
 try:
     statements = parse.parse(to_parse)
-    environment_builder = environment.StdEnvironmentBuilder()
-    environment_builder.add_function("J", j)
+    environment_builder = (environment.StdEnvironmentBuilder()
+        .add_functions(math.math)
+        .add_function(j.j)
+        .add_function(debug))
 
     interpreter = evaluate.Interpreter(environment_builder)
     for statement in statements:
